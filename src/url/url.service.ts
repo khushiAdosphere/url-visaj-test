@@ -3,62 +3,41 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { CreateUrlDto } from './dto/create-url.dto';
-import { PrismaService } from 'prisma.service';
+import { PrismaService } from 'src/common/database/prisma.service';
 
 @Injectable()
 
 export class UrlService {
-  constructor(private prisma: PrismaService){}
+  constructor(private prisma: PrismaService) { }
 
 
   async create(CreateUrlDto: CreateUrlDto) {
 
     try {
-    const { originalUrl } = CreateUrlDto; 
+      const { originalUrl } = CreateUrlDto;
 
-    if (!originalUrl) {
-      throw new Error('Original URL is required');
-    }
-
-    const shortUrl = await this.generateShortUrl();
-
-    return this.prisma.url.create({
-      data: {
-        originalUrl,  
-        shortCode: shortUrl,
-
+      if (!originalUrl) {
+        throw new Error('Original URL is required');
       }
-    }
-    );
-      
+
+      const shortUrl = await this.generateShortUrl();
+
+      return this.prisma.url.create({
+        data: {
+          originalUrl,
+          shortCode: shortUrl,
+
+        }
+      }
+      );
+
     } catch (error) {
       console.error('Error creating URL:', error);
       throw new Error('Failed to create URL');
-  }
+    }
   }
 
   async getOriginalUrl(code: string) {
-   try {
-      const urlEntry = await this.prisma.url.findUnique({
-        where: { shortCode: code },
-      });
-
-      if (!urlEntry) {
-        throw new Error('URL not found');
-      }
-
-      return urlEntry.originalUrl;
-
-   } catch (error) {
-      console.error('Error retrieving original URL:', error);
-      throw new Error('Failed to retrieve original URL');
-    
-   }
-
-
-  }
-
-  async clickCount (code: string) {
     try {
       const urlEntry = await this.prisma.url.findUnique({
         where: { shortCode: code },
@@ -75,11 +54,18 @@ export class UrlService {
         where: { shortCode: code },
         data: { count: newCount.toString() },
       });
+
+      return urlEntry.originalUrl;
+
     } catch (error) {
-      console.error('Error updating click count:', error);
-      throw new Error('Failed to update click count');
+      console.error('Error retrieving original URL:', error);
+      throw new Error('Failed to retrieve original URL');
+
     }
+
+
   }
+
 
   async getStats(code: string) {
     try {
@@ -110,4 +96,4 @@ export class UrlService {
     }
     return shortUrl;
   }
-  }
+}

@@ -1,10 +1,17 @@
-// prisma.config.ts
 import 'dotenv/config';
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
+
+
+const databaseUrl =
+  process.env.DATABASE_URL ??
+  'postgresql://postgres:visaj@localhost:5432/url-test';
 
 export default defineConfig({
-  schema: './prisma/schema.prisma',
+  schema: 'prisma/schema.prisma',
+  migrations: {
+    path: 'prisma/migrations',
+  },
   datasource: {
-    url: env('DATABASE_URL'), // Loaded from your .env file
+    url: databaseUrl,
   },
 });

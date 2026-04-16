@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { UrlController } from './url.controller';
+import { PrismaService } from 'src/common/database/prisma.service';
 
 @Module({
   controllers: [UrlController],
-  providers: [UrlService],
+  providers: [UrlService, PrismaService],
 })
-export class UrlModule {}
+export class UrlModule { }
